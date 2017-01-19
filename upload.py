@@ -10,6 +10,7 @@ try: # Windows needs stdio set for binary mode.
 except ImportError:
     pass
 
+BASE_PATH = "c:/Apache24/"
 UPLOAD_DIR = "c:/Apache24/tmp"
 
 HTML_TEMPLATE = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -21,21 +22,23 @@ HTML_TEMPLATE = '''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN
    <body>
     <font face="Helvetica">
     <center>
-      <h1>Bom Upload</h1>
+      <h1>Altium Einzelstücklisten Erstellung für DESY-ZE</h1>
       <hr>
+      Laden Sie bitte die Stückliste, die mit <a href="../Job_DESY_ZE.OutJob" target="_blank" download>diesem</a> Outputjob (siehe Abbildung) erstellt wird, hoch.
+      <br><br>
+      <img src="../img/AltiumOutputjob.jpg" alt="Generierung der Stückliste" >
+      <br><br>
       <form action="upload.py" method="POST" enctype="multipart/form-data">
           File name: <input name="file_1" type="file"><br><br>
           <input name="submit_file" type="submit" value="Datei senden" style="height:50px; width:148px">
       </form>
-      <br>
-      Laden Sie bitte die Stückliste, die mit <a href="../Job_DESY_ZE.OutJob" target="_blank" download>diesem</a> Outputjob erstellt wird, hoch.<br><br>
+      <br><br>
       Nachdem die Datei hochgeladen wurde und mit der Datenbank von DESY-ZE abgeglichen wurde, <br>
       wird ihnen eine Email gesendet mit der Stückliste in der gewünschten Vorlage von DESY-ZE. <br>
       Sollten noch Herstellernummern fehlen tragen Sie diese bitte in Altium nach und exportieren <br>
       Sie erneut. So wird sichergestellt, dass bereits vorhandene Bauteile in der Datenbank von <br>
       DESY-ZE, gefunden werden können.<br><br>
-      Es kann einige Minuten dauern bis Sie die Email erreicht.<br><br>
-      <img src="../img/AltiumOutputjob.jpg" alt="Generierung der Stückliste" >
+      Es kann einige Minuten dauern bis Sie die Email erreicht.
     </center>
     </font>
    </body>
@@ -55,7 +58,7 @@ def get_item_value(form_field, form):
 
 def print_redirect(form):
 
-    link = 'http://localhost:8080/cgi-bin/bomcheck.py'
+    link = 'http://szepcx16631:8080/cgi-bin/bomcheck.py'
 
     REDIRECT = '''Content-Type: text/html
             Location: ''' + link + '''
@@ -67,7 +70,7 @@ def print_redirect(form):
           <body>
             <font face="Helvetica">
             <center>
-              <h1>Bom Upload</h1>
+              <h1>Altium Einzelst&uuml;cklisten Erstellung f&uuml;r DESY-ZE</h1>
               <hr>
                 <br><br><br><br><br><br>
                 Verarbeite Stückliste... 

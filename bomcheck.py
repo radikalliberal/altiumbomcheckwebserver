@@ -12,13 +12,13 @@ try: # Windows needs stdio set for binary mode.
     msvcrt.setmode (1, os.O_BINARY) # stdout = 1
 except ImportError:
     pass
-
+BASE_PATH = "c:/Apache24/"
 UPLOAD_DIR = "c:/Apache24/tmp"
 
 HTMLHEAD = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><title>Bom Check</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head><body><font face="Helvetica"><center><h1>Bom Upload</h1><hr><br><br><br><br><br>"""
+</head><body><font face="Helvetica"><center><h1>Altium Einzelstücklisten Erstellung für DESY-ZE</h1><hr><br><br><br><br><br>"""
 
 def save_uploaded_file (fileitem, upload_dir):
     """This saves a file uploaded by an HTML form.
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # create a file handler
-handler = logging.FileHandler(UPLOAD_DIR + '/bomcheck.log')
+handler = logging.FileHandler(BASE_PATH + '/logs/bomcheck.log')
 handler.setLevel(logging.INFO)
 
 # create a logging format
@@ -101,12 +101,14 @@ if __name__ == '__main__':
         einzel = parent()
         einzel.to_csv(UPLOAD_DIR + '/bom.csv')
     except Exception as e:
-        print('Fehler: ' + str(e))
-        logger.error('Bom couldnt be saved: ' + str(e))
+        print('Fehler: {0}'.format(e))
+        logger.error('Bom couldnt be saved: {0}'.format(e))
     else:
-        print('Die Stückliste wird nun mit der DESY-ZE-Datenbank verglichen, dies kann einige Minuten<br>'+\
-          'in Anspruch nehmen. Wenn alle Bauteile eine Herstellernummern und einen Hersteller hinterlegt<br>'+\
-          'haben, schicken sie bitte die Stückliste, im Anhang der Email, zusammen mit den Fertigungsdaten<br>'+\
-          'an desy-ze@desy.de.')
-    logger.info('starting new script for Z-Number-Search')
-    os.system('start python -W ignore c:/Apache24/cgi-bin/znums.py ' + str(btOhne))
+        print('Die Stückliste wird nun mit der DESY-ZE-Datenbank verglichen, dies kann einige Minuten<br>'
+          'in Anspruch nehmen. Wenn alle Bauteile eine Herstellernummern und einen Hersteller hinterlegt<br>'
+          'haben, schicken sie bitte die Stückliste, im Anhang der Email, zusammen mit den Fertigungsdaten<br>'
+          'an desy-ze@desy.de.<br><br>'
+          'Sie können die Seite nun schließen, die Email wird ihnen schnellstmöglich zugesandt')
+        logger.info('starting new script for Z-Number-Search')
+        os.system('start python -W ignore c:/Apache24/cgi-bin/znums.py ' + str(btOhne))
+        #print('<br><br><font color="#0B610B">Die Datei ist fertig und wird Ihnen nun per Mail geschickt.')

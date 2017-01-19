@@ -43,6 +43,7 @@ def load_bom_info():
     return fout.read()
  
 def sendEmail(toaddr,name,btOhneZ):
+    logger.info('Versuche Email an ' + toaddr + ' zu senden')
     fromaddr = "desystuecklistenupload@gmail.com"
 
     btoz = ''
@@ -53,21 +54,28 @@ def sendEmail(toaddr,name,btOhneZ):
      
     msg['From'] = fromaddr
     msg['To'] = toaddr
-    msg['Subject'] = "Neue Einzelstückliste von " + name + btoz + '\n\n\n Mfg\n\n DESY-ZE'
+    msg['Subject'] = "Neue Einzelstückliste für DESY-ZE"
 
     if  btOhneZ > 0:
         btoz = 'Für ' + str(btOhneZ) + ' Bauteile gibt es noch keine Z-Nummer'
     else:
         btoz = 'Alle Bauteile haben Z-Nummern hinterlegt.'
 
-    if int(sys.argv[1]) > 0:
-        herstN = 'Es sind ' + sys.argv[1] + ' Bauteile ohne Herstellernummer/Hersteller vorhanden\n\n'+\
-                 + btoz + '\n' +\
-                 'Bitte ergänzen Sie alle Hersteller und Herstellernummern bevor Sie uns die Stückliste zusenden.' 
-    else:
-        herstN = 'Alle Bauteile haben Hersteller und Herstellernummern hinterlegt\n\n' +\
-                 + btoz + '\n\nSenden Sie uns die Stückliste, falls Sie vollständig ist gerne '+\
-                 'zusammen mit den Fertigungsdaten an desy-ze@desy.de.'
+    try:
+        if sys.argv[1] != '0':
+            herstN = ('Es sind {0} Bauteile ohne Herstellernummer/Hersteller vorhanden.\n\n' 
+                      '{1}\n\nBitte ergänzen Sie alle Hersteller und Herstellernummern '
+                      'bevor Sie uns die Stückliste zusenden.').format(sys.argv[1],btoz) 
+        else:
+            herstN = ('Alle Bauteile haben Hersteller und Herstellernummern hinterlegt\n\n{0}' 
+                      '\n\nSenden Sie uns die Stückliste, falls Sie vollständig ist gerne zusammen '
+                      'mit den Fertigungsdaten an desy-ze@desy.de.').format(btoz)
+
+    except Exception as e:
+        logger.warn('Fehler: '.format(e))
+        herst = ('Über den Zustand der Einzelstückliste lässt sich keine Aussage machen, bitte schauen ' 
+                 'Sie selbst nach ob alle Herstellernummern und vorzugsweise auch Lieferanten und Liefer'
+                 'antennummern vorhanden sind.')
 
             
 
@@ -80,7 +88,7 @@ def sendEmail(toaddr,name,btOhneZ):
     msg.attach(MIMEText(body, 'plain'))
      
     filename = "bom.xlsx"
-    attachment = open("C:/Apache24/tmp/bom.xlsx", "rb")
+    attachment = open(BASE_PATH + "/tmp/bom.xlsx", "rb")
      
     part = MIMEBase('application', 'octet-stream')
     part.set_payload((attachment).read())
@@ -97,12 +105,12 @@ def sendEmail(toaddr,name,btOhneZ):
     server.quit()
 
 def getpw():
-    f = open('password','r')
+    f = open(BASE_PATH + '/cgi-bin/password','r')
     return f.read()
 
 
 if __name__ == '__main__':
-
+    BASE_PATH = "c:/Apache24/"
     UPLOAD_DIR = "c:/Apache24/tmp"
 
     logger = logging.getLogger(__name__)
@@ -110,7 +118,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     # create a file handler
-    handler = logging.FileHandler(UPLOAD_DIR + '/bomcheck.log')
+    handler = logging.FileHandler(BASE_PATH + '/logs/bomcheck.log')
     handler.setLevel(logging.INFO)
 
     # create a logging format
